@@ -1,4 +1,4 @@
-package trial;
+
 
 public class Hello {
 
