@@ -1,0 +1,47 @@
+pipeline {
+    agent any
+    
+    tools {
+        maven 'maven3'
+    }
+    
+    stages {
+        stage('Checkout') {
+            steps {
+                echo 'Checking out code'
+                git branch: 'main', poll: true, url: 'https://github.com/avaniausekar/devops-lab'
+            }
+        }
+        
+        stage('Build') {
+            steps {
+                echo 'Building project'
+                dir('junit-maven/devops') {  
+                    sh 'mvn clean compile'
+                }
+            }
+        }
+        
+        stage('Test') {
+            steps {
+                echo 'Running tests'
+                dir('junit-maven/devops') {  
+                    sh 'mvn test'
+                }
+            }
+            post {
+                always {
+                    dir('junit-maven/devops') {  // Specify the folder path here
+                        junit '**/target/surefire-reports/*.xml'
+                    }
+                }
+            }
+        }
+        
+        stage('Run') {
+            steps {
+                echo 'Finished Running'
+            }
+        }
+    }
+}
